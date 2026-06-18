@@ -1,0 +1,123 @@
+services:
+  # --- INFRASTRUKTUR BERSAMA ---
+  rabbitmq:
+    image: rabbitmq:3-management
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    networks:
+      - logistik-network
+
+  postgres-db:
+    image: postgres:15
+    environment:
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: password123
+      POSTGRES_DB: order_tracking_db
+    ports:
+      - "5433:5432"
+    networks:
+      - logistik-network
+
+  # Database untuk Warehouse (terpisah sesuai requirement)
+  postgres-warehouse:
+    image: postgres:15
+    environment:
+      POSTGRES_USER: warehouse_user
+      POSTGRES_PASSWORD: warehouse123
+      POSTGRES_DB: warehouse_db
+    ports:
+      - "5434:5432"
+    networks:
+      - logistik-network
+
+  # Hasura GraphQL Engine untuk Warehouse Service
+  hasura-warehouse:
+    image: hasura/graphql-engine:v2.36.0
+    ports:
+      - "8080:8080"
+    environment:
+      HASURA_GRAPHQL_DATABASE_URL: postgres://warehouse_user:warehouse123@postgres-warehouse:5432/warehouse_db
+      HASURA_GRAPHQL_ENABLE_CONSOLE: "true"
+      HASURA_GRAPHQL_DEV_MODE: "true"
+      HASURA_GRAPHQL_ENABLED_LOG_TYPES: startup, http-log, webhook-log, websocket-log, query-log
+      HASURA_GRAPHQL_ADMIN_SECRET: adminsecret123
+    depends_on:
+      - postgres-warehouse
+    networks:
+      - logistik-network
+
+  # --- SERVICE KELOMPOKMU ---
+  auth-service:
+    build: ./tugasbesar-IAE
+    ports:
+      - "3000:8000"
+    volumes:
+      - ./tugasbesar-IAE:/var/www
+    networks:
+      - logistik-network
+
+  order-service:
+    build: ./Logistik-order-service
+    ports:
+      - "4000:4000"
+    environment:
+      - DATABASE_URL=postgresql://admin:password123@postgres-db:5432/order_tracking_db?schema=public
+    volumes:
+      - ./Logistik-order-service:/app
+    depends_on:
+      - rabbitmq
+      - postgres-db
+    networks:
+      - logistik-network
+
+  warehouse-service:
+    build: 
+      context: ./warehouse-api
+      dockerfile: docker/php/Dockerfile
+    ports:
+      - "5000:80"
+    environment:
+      - DB_CONNECTION=pgsql
+      - DB_HOST=postgres-warehouse
+      - DB_PORT=5432
+      - DB_DATABASE=warehouse_db
+      - DB_USERNAME=warehouse_user
+      - DB_PASSWORD=warehouse123
+      - RABBITMQ_HOST=rabbitmq
+      - RABBITMQ_PORT=5672
+    volumes:
+      - ./warehouse-api:/var/www
+    depends_on:
+      - rabbitmq
+      - postgres-warehouse
+      - hasura-warehouse
+    networks:
+      - logistik-network
+
+  driver-service:
+    build:
+      context: ./tugasbesar-IAE-service-driver
+    ports:
+      - "6000:8000"
+    environment:
+      - DB_CONNECTION=pgsql
+      - DB_HOST=postgres-db
+      - DB_PORT=5432
+      - DB_DATABASE=order_tracking_db
+      - DB_USERNAME=admin
+      - DB_PASSWORD=password123
+      - RABBITMQ_HOST=rabbitmq
+      - RABBITMQ_PORT=5672
+      - RABBITMQ_USER=guest
+      - RABBITMQ_PASSWORD=guest
+      - ORDER_SERVICE_URL=http://order-service:4000
+    depends_on:
+      - postgres-db
+      - rabbitmq
+    networks:
+      - logistik-network
+
+networks:
+  logistik-network:
+    driver: bridge

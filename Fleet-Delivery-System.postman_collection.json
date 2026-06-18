@@ -1,0 +1,824 @@
+{
+	"info": {
+		"_postman_id": "fleet-delivery-system-2026",
+		"name": "Fleet Delivery System - IAE",
+		"description": "Complete API collection for Fleet Delivery System Microservices\n- Service 1: Auth & Customer (REST)\n- Service 2: Order & Tracking (GraphQL)\n- Service 3: Warehouse (REST + Hasura GraphQL)\n- Service 4: Driver Assignment (REST)",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Service 1 - Auth & Customer (REST)",
+			"item": [
+				{
+					"name": "Auth",
+					"item": [
+						{
+							"name": "Register User",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"if (pm.response.code === 201) {",
+											"    var jsonData = pm.response.json();",
+											"    pm.environment.set(\"auth_token\", jsonData.token);",
+											"    pm.environment.set(\"user_email\", jsonData.user.email);",
+											"}"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n  \"name\": \"Budi Santoso\",\n  \"email\": \"budi@example.com\",\n  \"password\": \"password123\",\n  \"role\": \"sender\"\n}"
+								},
+								"url": {
+									"raw": "http://localhost:3000/api/auth/register",
+									"protocol": "http",
+									"host": ["localhost"],
+									"port": "3000",
+									"path": ["api", "auth", "register"]
+								},
+								"description": "Register new user (sender/agent/admin)"
+							},
+							"response": []
+						},
+						{
+							"name": "Login",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"if (pm.response.code === 200) {",
+											"    var jsonData = pm.response.json();",
+											"    pm.environment.set(\"auth_token\", jsonData.token);",
+											"}"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n  \"email\": \"budi@example.com\",\n  \"password\": \"password123\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "http://localhost:3000/api/auth/login",
+									"protocol": "http",
+									"host": ["localhost"],
+									"port": "3000",
+									"path": ["api", "auth", "login"]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Get Current User",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{auth_token}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "http://localhost:3000/api/auth/me",
+									"protocol": "http",
+									"host": ["localhost"],
+									"port": "3000",
+									"path": ["api", "auth", "me"]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Logout",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{auth_token}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "POST",
+								"header": [],
+								"url": {
+									"raw": "http://localhost:3000/api/auth/logout",
+									"protocol": "http",
+									"host": ["localhost"],
+									"port": "3000",
+									"path": ["api", "auth", "logout"]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "Customer",
+					"item": [
+						{
+							"name": "Get All Customers",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{auth_token}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "http://localhost:3000/api/customers",
+									"protocol": "http",
+									"host": ["localhost"],
+									"port": "3000",
+									"path": ["api", "customers"]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Create Customer",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{auth_token}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n  \"full_name\": \"Budi Santoso\",\n  \"phone\": \"08123456789\",\n  \"address\": \"Jl. Sudirman No. 123, Jakarta\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "http://localhost:3000/api/customers",
+									"protocol": "http",
+									"host": ["localhost"],
+									"port": "3000",
+									"path": ["api", "customers"]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Get Customer by ID",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{auth_token}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "http://localhost:3000/api/customers/1",
+									"protocol": "http",
+									"host": ["localhost"],
+									"port": "3000",
+									"path": ["api", "customers", "1"]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "Agent",
+					"item": [
+						{
+							"name": "Get All Agents",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{auth_token}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "http://localhost:3000/api/agents",
+									"protocol": "http",
+									"host": ["localhost"],
+									"port": "3000",
+									"path": ["api", "agents"]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Create Agent",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{auth_token}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n  \"full_name\": \"Ahmad Agent\",\n  \"phone\": \"08199999999\",\n  \"branch_name\": \"Jakarta Pusat\",\n  \"address\": \"Jl. Thamrin No. 45\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "http://localhost:3000/api/agents",
+									"protocol": "http",
+									"host": ["localhost"],
+									"port": "3000",
+									"path": ["api", "agents"]
+								}
+							},
+							"response": []
+						}
+					]
+				}
+			]
+		},
+		{
+			"name": "Service 2 - Order & Tracking (GraphQL)",
+			"item": [
+				{
+					"name": "Create Order",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"if (pm.response.code === 200) {",
+									"    var jsonData = pm.response.json();",
+									"    if (jsonData.data && jsonData.data.createOrder) {",
+									"        pm.environment.set(\"tracking_number\", jsonData.data.createOrder.tracking_number);",
+									"    }",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "graphql",
+							"graphql": {
+								"query": "mutation CreateOrder($customerId: String!, $itemDesc: String!) {\n  createOrder(\n    customer_id: $customerId\n    item_description: $itemDesc\n  ) {\n    id\n    tracking_number\n    customer_id\n    item_description\n    status\n    created_at\n    histories {\n      id\n      location\n      description\n      updated_at\n    }\n  }\n}",
+								"variables": "{\n  \"customerId\": \"budi@example.com\",\n  \"itemDesc\": \"Laptop Gaming ASUS ROG\"\n}"
+							}
+						},
+						"url": {
+							"raw": "http://localhost:4000/graphql",
+							"protocol": "http",
+							"host": ["localhost"],
+							"port": "4000",
+							"path": ["graphql"]
+						},
+						"description": "Create new order using GraphQL mutation"
+					},
+					"response": []
+				},
+				{
+					"name": "Track Order",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "graphql",
+							"graphql": {
+								"query": "query TrackOrder($trackingNumber: String!) {\n  trackOrder(tracking_number: $trackingNumber) {\n    id\n    tracking_number\n    customer_id\n    item_description\n    status\n    created_at\n    histories {\n      id\n      location\n      description\n      updated_at\n    }\n  }\n}",
+								"variables": "{\n  \"trackingNumber\": \"{{tracking_number}}\"\n}"
+							}
+						},
+						"url": {
+							"raw": "http://localhost:4000/graphql",
+							"protocol": "http",
+							"host": ["localhost"],
+							"port": "4000",
+							"path": ["graphql"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update Tracking",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "graphql",
+							"graphql": {
+								"query": "mutation UpdateTracking(\n  $trackingNumber: String!\n  $location: String!\n  $description: String!\n  $status: String!\n) {\n  updateTracking(\n    tracking_number: $trackingNumber\n    location: $location\n    description: $description\n    status: $status\n  ) {\n    id\n    tracking_number\n    status\n    histories {\n      location\n      description\n      updated_at\n    }\n  }\n}",
+								"variables": "{\n  \"trackingNumber\": \"{{tracking_number}}\",\n  \"location\": \"Jakarta Pusat\",\n  \"description\": \"Paket sedang dalam perjalanan\",\n  \"status\": \"IN_TRANSIT\"\n}"
+							}
+						},
+						"url": {
+							"raw": "http://localhost:4000/graphql",
+							"protocol": "http",
+							"host": ["localhost"],
+							"port": "4000",
+							"path": ["graphql"]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Service 3 - Warehouse (REST)",
+			"item": [
+				{
+					"name": "Get All Warehouse Orders",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:5000/api/v1/warehouse/orders",
+							"protocol": "http",
+							"host": ["localhost"],
+							"port": "5000",
+							"path": ["api", "v1", "warehouse", "orders"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get All Products",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:5000/api/v1/warehouse/products",
+							"protocol": "http",
+							"host": ["localhost"],
+							"port": "5000",
+							"path": ["api", "v1", "warehouse", "products"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get All Stocks",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:5000/api/v1/warehouse/stocks",
+							"protocol": "http",
+							"host": ["localhost"],
+							"port": "5000",
+							"path": ["api", "v1", "warehouse", "stocks"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Low Stock Items",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:5000/api/v1/warehouse/low-stock",
+							"protocol": "http",
+							"host": ["localhost"],
+							"port": "5000",
+							"path": ["api", "v1", "warehouse", "low-stock"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update Order Status",
+					"request": {
+						"method": "PATCH",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"status\": \"processing\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:5000/api/v1/warehouse/orders/1/status",
+							"protocol": "http",
+							"host": ["localhost"],
+							"port": "5000",
+							"path": ["api", "v1", "warehouse", "orders", "1", "status"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Dispatch Order",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:5000/api/v1/warehouse/dispatch/{{tracking_number}}",
+							"protocol": "http",
+							"host": ["localhost"],
+							"port": "5000",
+							"path": ["api", "v1", "warehouse", "dispatch", "{{tracking_number}}"]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Service 3 - Warehouse (Hasura GraphQL)",
+			"item": [
+				{
+					"name": "Get All Products with Stocks",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "x-hasura-admin-secret",
+								"value": "adminsecret123",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "graphql",
+							"graphql": {
+								"query": "query GetAllProductsWithStock {\n  products {\n    id\n    sku\n    name\n    description\n    price\n    category\n    stocks {\n      id\n      location\n      quantity\n      reorder_level\n    }\n  }\n}",
+								"variables": ""
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8080/v1/graphql",
+							"protocol": "http",
+							"host": ["localhost"],
+							"port": "8080",
+							"path": ["v1", "graphql"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Warehouse Orders",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "x-hasura-admin-secret",
+								"value": "adminsecret123",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "graphql",
+							"graphql": {
+								"query": "query GetWarehouseOrders {\n  orders {\n    id\n    reference\n    status\n    quantity\n    total\n    created_at\n    product {\n      name\n      sku\n      category\n    }\n  }\n}",
+								"variables": ""
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8080/v1/graphql",
+							"protocol": "http",
+							"host": ["localhost"],
+							"port": "8080",
+							"path": ["v1", "graphql"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Low Stock Items",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "x-hasura-admin-secret",
+								"value": "adminsecret123",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "graphql",
+							"graphql": {
+								"query": "query GetLowStockItems {\n  stocks(where: {quantity: {_lte: 5}}) {\n    id\n    location\n    quantity\n    reorder_level\n    product {\n      name\n      sku\n      category\n    }\n  }\n}",
+								"variables": ""
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8080/v1/graphql",
+							"protocol": "http",
+							"host": ["localhost"],
+							"port": "8080",
+							"path": ["v1", "graphql"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Order by Tracking Number",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "x-hasura-admin-secret",
+								"value": "adminsecret123",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "graphql",
+							"graphql": {
+								"query": "query GetOrderByTracking($trackingNumber: String!) {\n  orders(where: {reference: {_eq: $trackingNumber}}) {\n    id\n    reference\n    status\n    quantity\n    product {\n      name\n      description\n    }\n    created_at\n    updated_at\n  }\n}",
+								"variables": "{\n  \"trackingNumber\": \"{{tracking_number}}\"\n}"
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8080/v1/graphql",
+							"protocol": "http",
+							"host": ["localhost"],
+							"port": "8080",
+							"path": ["v1", "graphql"]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Service 4 - Driver Assignment (REST)",
+			"item": [
+				{
+					"name": "Driver Management",
+					"item": [
+						{
+							"name": "Get All Drivers",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "http://localhost:6000/api/drivers",
+									"protocol": "http",
+									"host": ["localhost"],
+									"port": "6000",
+									"path": ["api", "drivers"]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Get Available Drivers",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "http://localhost:6000/api/drivers/available",
+									"protocol": "http",
+									"host": ["localhost"],
+									"port": "6000",
+									"path": ["api", "drivers", "available"]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Create Driver",
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n  \"name\": \"Ahmad Kurir\",\n  \"phone_number\": \"08111111111\",\n  \"status\": \"available\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "http://localhost:6000/api/drivers",
+									"protocol": "http",
+									"host": ["localhost"],
+									"port": "6000",
+									"path": ["api", "drivers"]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Get Driver by ID",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "http://localhost:6000/api/drivers/1",
+									"protocol": "http",
+									"host": ["localhost"],
+									"port": "6000",
+									"path": ["api", "drivers", "1"]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Update Driver",
+							"request": {
+								"method": "PUT",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n  \"status\": \"available\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "http://localhost:6000/api/drivers/1",
+									"protocol": "http",
+									"host": ["localhost"],
+									"port": "6000",
+									"path": ["api", "drivers", "1"]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Delete Driver",
+							"request": {
+								"method": "DELETE",
+								"header": [],
+								"url": {
+									"raw": "http://localhost:6000/api/drivers/1",
+									"protocol": "http",
+									"host": ["localhost"],
+									"port": "6000",
+									"path": ["api", "drivers", "1"]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "Assignment Management",
+					"item": [
+						{
+							"name": "Get All Assignments",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "http://localhost:6000/api/assignments",
+									"protocol": "http",
+									"host": ["localhost"],
+									"port": "6000",
+									"path": ["api", "assignments"]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Get Assignment by Tracking Number",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "http://localhost:6000/api/assignments/tracking/{{tracking_number}}",
+									"protocol": "http",
+									"host": ["localhost"],
+									"port": "6000",
+									"path": ["api", "assignments", "tracking", "{{tracking_number}}"]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Get Assignments by Driver",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "http://localhost:6000/api/assignments/driver/1",
+									"protocol": "http",
+									"host": ["localhost"],
+									"port": "6000",
+									"path": ["api", "assignments", "driver", "1"]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Update Assignment Status",
+							"request": {
+								"method": "PATCH",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n  \"status\": \"delivered\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "http://localhost:6000/api/assignments/1/status",
+									"protocol": "http",
+									"host": ["localhost"],
+									"port": "6000",
+									"path": ["api", "assignments", "1", "status"]
+								}
+							},
+							"response": []
+						}
+					]
+				}
+			]
+		}
+	],
+	"variable": [
+		{
+			"key": "auth_token",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "tracking_number",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "user_email",
+			"value": "",
+			"type": "string"
+		}
+	]
+}

@@ -1,0 +1,67 @@
+# Node modules
+node_modules/
+npm-debug.log
+yarn-error.log
+
+# PHP vendor
+vendor/
+
+# Laravel
+.env
+.env.*
+!.env.example
+storage/*.key
+.phpunit.result.cache
+Homestead.json
+Homestead.yaml
+
+# IDEs
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+logs/
+
+# Database
+*.sqlite
+*.sqlite-journal
+
+# Docker volumes (optional - comment out if you want to track)
+# postgres-data/
+# mysql-data/
+
+# Temporary files
+*.tmp
+*.temp
+*.cache
+
+# Build outputs
+dist/
+build/
+.next/
+
+# Prisma
+prisma/migrations/**/migration.sql.backup
+
+# Laravel specific
+bootstrap/cache/*
+!bootstrap/cache/.gitignore
+storage/framework/cache/*
+!storage/framework/cache/.gitignore
+storage/framework/sessions/*
+!storage/framework/sessions/.gitignore
+storage/framework/views/*
+!storage/framework/views/.gitignore
+storage/logs/*
+!storage/logs/.gitignore
+
+# Keep .env.example files
+!**/.env.example
