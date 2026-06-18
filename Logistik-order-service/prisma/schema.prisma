@@ -1,0 +1,29 @@
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL") // Kembali menggunakan .env yang normal
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+// Tabel 1: Untuk mencatat pesanan / nomor resi
+model Order {
+  id               String            @id @default(uuid())
+  tracking_number  String            @unique
+  customer_id      String            
+  item_description String
+  status           String            @default("PENDING") 
+  created_at       DateTime          @default(now())
+  histories        TrackingHistory[] 
+}
+
+// Tabel 2: Untuk mencatat riwayat perjalanan paket (Tracking)
+model TrackingHistory {
+  id          String   @id @default(uuid())
+  order_id    String
+  order       Order    @relation(fields: [order_id], references: [id], onDelete: Cascade)
+  location    String   
+  description String   
+  updated_at  DateTime @default(now())
+}

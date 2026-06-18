@@ -1,0 +1,27 @@
+services:
+  # Database khusus untuk Service 2 (Order & Tracking) milikmu
+  order_db:
+    image: postgres:15-alpine
+    container_name: order_postgres_db
+    environment:
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: password123
+      POSTGRES_DB: order_tracking_db
+    ports:
+      - "5433:5432"     # 👈 KITA UBAH KE 5433 AGAR TIDAK BENTROK
+    volumes:
+      - postgres_order_data_v2:/var/lib/postgresql/data
+
+  # Message Broker bersama untuk kelompok (dijalankan di lokalmu dulu)
+  message_broker:
+    image: rabbitmq:3-management-alpine
+    container_name: logistic_rabbitmq
+    ports:
+      - "5672:5672"     # Port untuk berkirim pesan asinkron antar service
+      - "15672:15672"   # Dashboard visual RabbitMQ
+    environment:
+      RABBITMQ_DEFAULT_USER: guest
+      RABBITMQ_DEFAULT_PASS: guest
+
+volumes:
+  postgres_order_data_v2:

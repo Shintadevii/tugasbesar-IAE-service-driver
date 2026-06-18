@@ -1,0 +1,12 @@
+node_modules/
+vendor/
+.git/
+storage/
+bootstrap/cache/
+.env
+.env.local
+.DS_Store
+*.log
+dist/
+build/
+.vite/
