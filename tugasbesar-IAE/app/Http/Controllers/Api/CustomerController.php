@@ -18,15 +18,17 @@ class CustomerController extends Controller
 
     public function store(Request $request)
     {
+        // Validasi tetap menerima 'full_name' dari Postman
         $data = $request->validate([
             'full_name' => 'required',
             'phone' => 'required',
             'address' => 'required'
         ]);
 
+        // Dipetakan saat create: input 'full_name' dimasukkan ke kolom 'name' di database
         $customer = Customer::create([
             'user_id' => $request->user()->id,
-            'full_name' => $data['full_name'],
+            'name' => $data['full_name'], // <-- PERBAIKAN DI SINI
             'phone' => $data['phone'],
             'address' => $data['address']
         ]);
@@ -40,7 +42,7 @@ class CustomerController extends Controller
 
             $msgData = json_encode([
                 'customer_id' => $customer->id,
-                'full_name' => $customer->full_name,
+                'full_name' => $customer->name, // Mengambil properti name yang baru diset
                 'phone' => $customer->phone
             ]);
 
@@ -66,6 +68,6 @@ class CustomerController extends Controller
     {
         return Customer::whereHas('user', function ($q) use ($request) {
             $q->where('email', $request->email);
-        })->first();
+        })->first(); // <-- Tanda kurung kurawal penutup sudah diperbaiki di sini
     }
 }

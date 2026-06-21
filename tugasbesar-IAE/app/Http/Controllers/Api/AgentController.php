@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Models\Agent;
 use Illuminate\Http\Request;
+// --- TAMBAHKAN INI ---
 use PhpAmqpLib\Connection\AMQPStreamConnection;
 use PhpAmqpLib\Message\AMQPMessage;
 
@@ -17,6 +18,7 @@ class AgentController extends Controller
 
     public function store(Request $request)
     {
+        // Validasi tetap menerima 'full_name' dari Postman biar seragam
         $data = $request->validate([
             'full_name' => 'required',
             'phone' => 'required',
@@ -24,9 +26,10 @@ class AgentController extends Controller
             'address' => 'required'
         ]);
 
+        // Dipetakan saat create: input 'full_name' dimasukkan ke kolom 'name' di database
         $agent = Agent::create([
             'user_id' => $request->user()->id,
-            'full_name' => $data['full_name'],
+            'name' => $data['full_name'], // <-- PERBAIKAN DI SINI (Disesuaikan ke kolom database)
             'phone' => $data['phone'],
             'branch_name' => $data['branch_name'],
             'address' => $data['address']
@@ -41,7 +44,7 @@ class AgentController extends Controller
 
             $msgData = json_encode([
                 'agent_id' => $agent->id,
-                'full_name' => $agent->full_name,
+                'full_name' => $agent->name, // Mengambil properti name yang baru diset
                 'branch' => $agent->branch_name
             ]);
 

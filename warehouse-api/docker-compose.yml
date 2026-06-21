@@ -5,21 +5,21 @@ services:
       context: .
       dockerfile: docker/php/Dockerfile
     environment:
-      DB_CONNECTION: mysql
-      DB_HOST: mysql
-      DB_PORT: 3306
-      DB_DATABASE: warehouse
-      DB_USERNAME: laravel
-      DB_PASSWORD: secret
+      DB_CONNECTION: pgsql
+      DB_HOST: postgres-warehouse
+      DB_PORT: 5432
+      DB_DATABASE: warehouse_db
+      DB_USERNAME: admin
+      DB_PASSWORD: password123
       REDIS_HOST: redis
       REDIS_PORT: 6379
-      CACHE_STORE: redis
-      SESSION_DRIVER: redis
+      CACHE_STORE: database
+      SESSION_DRIVER: database
       QUEUE_CONNECTION: redis
     volumes:
       - .:/var/www
     depends_on:
-      - mysql
+      - postgres-warehouse
       - redis
     networks:
       - warehouse-net
@@ -36,21 +36,21 @@ services:
     networks:
       - warehouse-net
 
-  mysql:
-    image: mysql:8.0
+  postgres-warehouse:
+    image: postgres:15-alpine
     environment:
-      MYSQL_DATABASE: warehouse
-      MYSQL_ROOT_PASSWORD: secret
-      MYSQL_USER: laravel
-      MYSQL_PASSWORD: secret
+      POSTGRES_DB: warehouse_db
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: password123
     ports:
-      - "3306:3306"
+      - "5434:5432"
     volumes:
-      - mysql-data:/var/lib/mysql
+      - pgsql-data:/var/lib/postgresql/data
     healthcheck:
-      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
-      timeout: 20s
-      retries: 10
+      test: ["CMD-SHELL", "pg_isready -U admin -d warehouse_db"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
     networks:
       - warehouse-net
 
@@ -70,4 +70,4 @@ networks:
     driver: bridge
 
 volumes:
-  mysql-data:
+  pgsql-data:

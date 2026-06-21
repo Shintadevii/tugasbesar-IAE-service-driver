@@ -5,8 +5,7 @@ use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\CustomerController;
 use App\Http\Controllers\Api\AgentController;
 use App\Http\Controllers\Api\DriverController;
-use App\Http\Controllers\Api\DriverAssignmentController;
-
+use App\Http\Controllers\Api\AssignmentController; // Diubah ke AssignmentController agar sinkron dengan fungsi updateStatus yang baru
 
 /*
 |--------------------------------------------------------------------------
@@ -59,8 +58,9 @@ Route::prefix('drivers')->group(function () {
 |--------------------------------------------------------------------------
 */
 Route::prefix('assignments')->group(function () {
-    Route::get('/', [DriverAssignmentController::class, 'index']);
-    Route::get('/tracking/{trackingNumber}', [DriverAssignmentController::class, 'getByTrackingNumber']);
-    Route::get('/driver/{driverId}', [DriverAssignmentController::class, 'getByDriver']);
-    Route::patch('/{id}/status', [DriverAssignmentController::class, 'updateStatus']);
+    // Diarahkan penuh ke AssignmentController yang sudah dilengkapi fungsi dan validasi enum database
+    Route::get('/', [AssignmentController::class, 'index']);
+    Route::get('/tracking/{trackingNumber}', [AssignmentController::class, 'getByTrackingNumber']);
+    Route::get('/driver/{driverId}', [AssignmentController::class, 'getByDriver']);
+    Route::patch('/{id}/status', [AssignmentController::class, 'updateStatus']);
 });

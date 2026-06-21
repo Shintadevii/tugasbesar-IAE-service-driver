@@ -15,7 +15,7 @@ services:
       POSTGRES_PASSWORD: password123
       POSTGRES_DB: order_tracking_db
     ports:
-      - "5433:5432"
+      - "5435:5432"
     networks:
       - logistik-network
 

@@ -7,7 +7,6 @@ use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
-// --- TAMBAHKAN INI ---
 use PhpAmqpLib\Connection\AMQPStreamConnection;
 use PhpAmqpLib\Message\AMQPMessage;
 
@@ -64,5 +63,50 @@ class AuthController extends Controller
         ], 201);
     }
 
-    // ... (fungsi lainnya tetap sama)
+    public function login(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'email'    => 'required|email',
+            'password' => 'required',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json($validator->errors(), 422);
+        }
+
+        // Cari user berdasarkan email
+        $user = User::where('email', $request->email)->first();
+
+        // Validasi keberadaan user dan kecocokan password
+        if (!$user || !Hash::check($request->password, $user->password)) {
+            return response()->json([
+                'message' => 'Email atau password salah.'
+            ], 401);
+        }
+
+        // Buat token baru menggunakan Laravel Sanctum
+        $token = $user->createToken('auth_token')->plainTextToken;
+
+        return response()->json([
+            'message' => 'Login success',
+            'token'   => $token,
+            'user'    => $user
+        ], 200);
+    }
+
+    public function me(Request $request)
+    {
+        // Mengembalikan data detail user yang sedang login saat ini
+        return response()->json($request->user(), 200);
+    }
+
+    public function logout(Request $request)
+    {
+        // Menghapus token token yang sedang digunakan saat ini
+        $request->user()->currentAccessToken()->delete();
+
+        return response()->json([
+            'message' => 'Logout success'
+        ], 200);
+    }
 }

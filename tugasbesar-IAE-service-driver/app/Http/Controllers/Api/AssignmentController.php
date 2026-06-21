@@ -64,6 +64,47 @@ class AssignmentController extends Controller
     }
 
     /**
+     * FUNGSI BARU: Update Status Penugasan (REST API)
+     * Menangani request PATCH /api/assignments/{id}/status
+     */
+    public function updateStatus(Request $request, $id)
+    {
+        // 1. Validasi Input status agar sinkron dengan Enum database PostgreSQL kelompokmu
+        $request->validate([
+            'status' => 'required|in:assigned,ongoing,completed',
+        ]);
+
+        // 2. Cari data assignment berdasarkan ID
+        $assignment = DriverAssignment::find($id);
+
+        if (!$assignment) {
+            return response()->json([
+                'status' => 'failed',
+                'message' => 'Data assignment tidak ditemukan.'
+            ], 404);
+        }
+
+        // 3. Update status assignment
+        $assignment->update([
+            'status' => $request->status
+        ]);
+
+        // 4. JIKA status selesai (completed), otomatis kembalikan status Driver menjadi 'available' lagi
+        if ($request->status === 'completed') {
+            $driver = Driver::find($assignment->driver_id);
+            if ($driver) {
+                $driver->update(['status' => 'available']);
+            }
+        }
+
+        return response()->json([
+            'status' => 'success',
+            'message' => 'Status assignment berhasil diperbarui!',
+            'data' => $assignment
+        ], 200);
+    }
+
+    /**
      * Jalur 2: GRAPHQL INTEGRATION (Ditambahkan untuk jembatan integrasi kelompok)
      */
     public function ping()

@@ -14,7 +14,8 @@ return new class extends Migration
         Schema::create('orders', function (Blueprint $table) {
             $table->id();
             $table->string('reference')->unique();
-            $table->enum('status', ['pending','processing','shipped','completed','cancelled'])
+            // PERBAIKAN: Menambahkan 'received' DAN 'dispatched' ke dalam daftar enum database
+            $table->enum('status', ['pending', 'received', 'processing', 'dispatched', 'shipped', 'completed', 'cancelled'])
                 ->default('pending');
             $table->foreignId('product_id')->constrained();
             $table->integer('quantity');
